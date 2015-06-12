@@ -1,0 +1,30 @@
+object file = context.Projects.Where(w => w.ProjectID == Project_Id).Select(s => s.TextOrFile).FirstOrDefault();
+                    string fileName = Server.MapPath("~/Content/PdfFiles/" + file);
+                    object saveAs = Server.MapPath("~/Content/PdfFiles/NewFiles/" + file);
+                   // Microsoft.Office.Interop.Excel.Workbook workbook = new Microsoft.Office.Interop.Excel.Workbook();
+                    var excelApp = new Microsoft.Office.Interop.Excel.Application();
+                    excelApp.Workbooks.Open(fileName, Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing,
+                                                           Type.Missing, Type.Missing);
+                    var ws = excelApp.Worksheets;
+                    var worksheet = (Worksheet)ws.get_Item("Sheet1");
+                    Microsoft.Office.Interop.Excel.Range range = worksheet.UsedRange;
+                    object[,] values = (object[,])range.Value2;
+
+                    for (int row = 1; row <= values.GetUpperBound(0); row++)
+                    {
+                        string phone = Convert.ToString(values[2, 12]);
+                        if (phone == "")
+                        {
+                            phone = translated;
+                        }
+                        range.Cells.set_Item(2, 12, phone);
+                    }
+                    //HttpResponse response = new HttpResponseWrapper(this.Response);
+                    
+                    excelApp.Save();
+                    excelApp.Quit();
